@@ -106,15 +106,8 @@ module.exports = {
 if (!global.db) global.db = {};
 
 if (!global.db.bankData) {
-    const { bankData } = require('../../database/controller');
+    const { bankData } = require("../../database/controller");
     global.db.bankData = bankData;
-}
-
-const bankData = global.db.bankData;
-
-let bank = await bankData.get(senderID);
-if (!bank) {
-    bank = await bankData.create(senderID);
 }
 
 		const bankData = global.db.bankData;
