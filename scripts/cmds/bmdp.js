@@ -5,11 +5,11 @@ module.exports = {
     name: "bmdp",
     aliases: ["boysmatchingdp"],
     version: "1.0",
-    author: "Saimx69x",
+    author: "Christus",
     countDown: 5,
     role: 0,
-    shortDescription: "Random Boys Matching DP",
-    longDescription: "Send random Boys Matching DP",
+    shortDescription: "Images aléatoires de garçons assortis",
+    longDescription: "Envoie des images aléatoires de garçons assortis",
     category: "image",
     guide: "{pn}"
   },
@@ -21,7 +21,7 @@ module.exports = {
 
       api.sendMessage(
         {
-          body: "Here's your bmdp! 🥰✨️",
+          body: "Voici vos images de garçons assortis ! 🥰✨️",
           attachment: await Promise.all([
             global.utils.getStreamFromURL(boy),
             global.utils.getStreamFromURL(boy2)
@@ -31,7 +31,7 @@ module.exports = {
         event.messageID
       );
     } catch (e) {
-      api.sendMessage("❌ Couldn't fetch BMDP.", event.threadID, event.messageID);
+      api.sendMessage("❌ Impossible de récupérer les images.", event.threadID, event.messageID);
       console.error(e);
     }
   }
