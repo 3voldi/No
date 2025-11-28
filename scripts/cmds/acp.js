@@ -5,14 +5,14 @@ module.exports = {
     name: "accept",
     aliases: ["acp"],
     version: "1.0",
-    author: "Xnil6x | Saimx69x",
+    author: "Christus",
     countDown: 8,
     role: 2,
-    shortDescription: "manage friend requests",
-    longDescription: "Accept or reject friend requests",
+    shortDescription: "gérer les demandes d'amis",
+    longDescription: "Accepter ou refuser les demandes d'amis",
     category: "utility",
     guide: {
-      en: "{pn} [add|del] [number|all]"
+      en: "{pn} [add|del] [numéro|all]"
     }
   },
 
@@ -41,13 +41,13 @@ module.exports = {
     if (args[0] === "add") {
       form.fb_api_req_friendly_name = "FriendingCometFriendRequestConfirmMutation";
       form.doc_id = "3147613905362928";
-      actionType = "Accepted";
+      actionType = "Acceptée";
     } else if (args[0] === "del") {
       form.fb_api_req_friendly_name = "FriendingCometFriendRequestDeleteMutation";
       form.doc_id = "4108254489275063";
-      actionType = "Rejected";
+      actionType = "Refusée";
     } else {
-      return api.sendMessage("❌ Invalid command. Usage: <add|del> <number|all>", event.threadID, event.messageID);
+      return api.sendMessage("❌ Commande invalide. Utilisation : <add|del> <numéro|all>", event.threadID, event.messageID);
     }
 
     let targetIDs = args.slice(1);
@@ -57,14 +57,13 @@ module.exports = {
 
     const newTargetIDs = [];
     const promiseFriends = [];
-
     const success = [];
     const failed = [];
 
     for (const stt of targetIDs) {
       const user = listRequest[parseInt(stt) - 1];
       if (!user) {
-        failed.push(`🚫 Can't find request #${stt}`);
+        failed.push(`🚫 Impossible de trouver la demande #${stt}`);
         continue;
       }
       form.variables.input.friend_requester_id = user.node.id;
@@ -79,9 +78,9 @@ module.exports = {
     results.forEach((result, index) => {
       const user = newTargetIDs[index];
       if (result.status === "fulfilled" && !JSON.parse(result.value).errors) {
-        success.push(`✅ 𝐒𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥𝐥𝐲 ${actionType}: ${user.node.name} (${user.node.id})`);
+        success.push(`✅ ${actionType} avec succès : ${user.node.name} (${user.node.id})`);
       } else {
-        failed.push(`❌ 𝐅𝐚𝐢𝐥𝐞𝐝: ${user.node.name} (${user.node.id})`);
+        failed.push(`❌ Échec : ${user.node.name} (${user.node.id})`);
       }
     });
 
@@ -90,7 +89,7 @@ module.exports = {
     if (failed.length > 0) replyMsg += failed.join("\n");
 
     if (replyMsg) api.sendMessage(replyMsg, event.threadID, event.messageID);
-    else api.sendMessage("❌ 𝐍𝐨 𝐯𝐚𝐥𝐢𝐝 𝐫𝐞𝐪𝐮𝐞𝐬𝐭𝐬 𝐰𝐞𝐫𝐞 𝐩𝐫𝐨𝐜𝐞𝐬𝐬𝐞𝐝.", event.threadID);
+    else api.sendMessage("❌ Aucune demande valide n'a été traitée.", event.threadID);
 
     api.unsendMessage(messageID);
   },
@@ -109,24 +108,24 @@ module.exports = {
       const listRequest = JSON.parse(response).data.viewer.friending_possibilities.edges;
 
       if (!listRequest || listRequest.length === 0) {
-        return api.sendMessage("🌟 𝐘𝐨𝐮 𝐡𝐚𝐯𝐞 𝐧𝐨 𝐩𝐞𝐧𝐝𝐢𝐧𝐠 𝐟𝐫𝐢𝐞𝐧𝐝 𝐫𝐞𝐪𝐮𝐞𝐬𝐭𝐬!", event.threadID);
+        return api.sendMessage("🌟 Vous n'avez aucune demande d'ami en attente !", event.threadID);
       }
 
-      let msg = "╔═══》 𝐅𝐫𝐢𝐞𝐧𝐝 𝐑𝐞𝐪𝐮𝐞𝐬𝐭𝐬 《 ═══╗\n\n";
+      let msg = "╔═══》 𝐃𝐞𝐦𝐚𝐧𝐝𝐞𝐬 𝐝'𝐚𝐦𝐢𝐬 《 ═══╗\n\n";
       listRequest.forEach((user, index) => {
-        msg += `💠  𝐍𝐨. ${index + 1}\n`;
-        msg += `👤 𝐍𝐚𝐦𝐞: ${user.node.name}\n`;
-        msg += `🆔 𝐈𝐃: ${user.node.id}\n`;
-        msg += `🔗 𝐏𝐫𝐨𝐟𝐢𝐥𝐞: ${user.node.url.replace("www.facebook", "fb")}\n`;
+        msg += `💠  No. ${index + 1}\n`;
+        msg += `👤 Nom: ${user.node.name}\n`;
+        msg += `🆔 ID: ${user.node.id}\n`;
+        msg += `🔗 Profil: ${user.node.url.replace("www.facebook", "fb")}\n`;
         msg += "━━━━━━━━━━━━━━━━\n";
       });
 
-      msg += "\n💡 𝐑𝐞𝐩𝐥𝐲 𝐰𝐢𝐭𝐡:\n";
-      msg += "✅ add <number> — 𝐀𝐜𝐜𝐞𝐩𝐭 𝐫𝐞𝐪𝐮𝐞𝐬𝐭\n";
-      msg += "❌ del <number> — 𝐑𝐞𝐣𝐞𝐜𝐭 𝐫𝐞𝐪𝐮𝐞𝐬𝐭\n";
-      msg += "💫 add all — 𝐀𝐜𝐜𝐞𝐩𝐭 𝐚𝐥𝐥\n";
-      msg += "🔥 del all — 𝐑𝐞𝐣𝐞𝐜𝐭 𝐚𝐥𝐥\n\n";
-      msg += "⏳ 𝐓𝐡𝐢𝐬 𝐦𝐞𝐧𝐮 𝐰𝐢𝐥𝐥 𝐚𝐮𝐭𝐨-𝐝𝐞𝐥𝐞𝐭𝐞 𝐢𝐧 2 𝐦𝐢𝐧𝐮𝐭𝐞s.\n";
+      msg += "\n💡 Répondez avec :\n";
+      msg += "✅ add <numéro> — Accepter la demande\n";
+      msg += "❌ del <numéro> — Refuser la demande\n";
+      msg += "💫 add all — Tout accepter\n";
+      msg += "🔥 del all — Tout refuser\n\n";
+      msg += "⏳ Ce menu sera supprimé automatiquement dans 2 minutes.\n";
       msg += "╚═══════════════════╝";
 
       api.sendMessage(msg, event.threadID, (e, info) => {
@@ -143,7 +142,7 @@ module.exports = {
 
     } catch (error) {
       console.error(error);
-      api.sendMessage("❌ 𝐄𝐫𝐫𝐨𝐫 𝐨𝐜𝐜𝐮𝐫𝐫𝐞𝐝 𝐰𝐡𝐢𝐥𝐞 𝐟𝐞𝐭𝐜𝐡𝐢𝐧𝐠 𝐟𝐫𝐢𝐞𝐧𝐝 𝐫𝐞𝐪𝐮𝐞𝐬𝐭𝐬.", event.threadID);
+      api.sendMessage("❌ Une erreur est survenue lors de la récupération des demandes d'amis.", event.threadID);
     }
   }
 };
