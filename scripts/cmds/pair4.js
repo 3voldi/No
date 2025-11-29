@@ -8,7 +8,7 @@ async function getApiBase() {
     const res = await axios.get(GITHUB_RAW);
     return res.data.apiv1;
   } catch (e) {
-    console.error("GitHub raw fetch error:", e.message);
+    console.error("Erreur de récupération GitHub raw :", e.message);
     return null;
   }
 }
@@ -21,7 +21,7 @@ async function toFont(text, id = 21) {
     const { data } = await axios.get(apiUrl);
     return data.output || text;
   } catch (e) {
-    console.error("Font API error:", e.message);
+    console.error("Erreur API de police :", e.message);
     return text;
   }
 }
@@ -30,13 +30,19 @@ module.exports = {
   config: {
     name: "pair4",
     aliases: ["lovepair4", "match4"],
-    author: "Saimx69x",
+    author: "Christus",
     version: "2.0",
     role: 0,
     category: "love",
-    shortDescription: { en: "💘 Generate a love match between you and another group member" },
-    longDescription: { en: "This command calculates a love match based on gender. Shows avatars, background, and love percentage." },
-    guide: { en: "{p}{n} — Use this command in a group to find a love match" }
+    shortDescription: { 
+      en: "💘 Génère un match amoureux entre toi et un autre membre du groupe" 
+    },
+    longDescription: { 
+      en: "Cette commande calcule un match amoureux basé sur le genre. Affiche les avatars, le fond et le pourcentage d'amour." 
+    },
+    guide: { 
+      en: "{p}{n} — Utilise cette commande dans un groupe pour trouver un match amoureux" 
+    }
   },
 
   onStart: async function ({ api, event, usersData }) {
@@ -48,16 +54,24 @@ module.exports = {
       const users = threadData.userInfo;
 
       const myData = users.find(user => user.id === event.senderID);
-      if (!myData || !myData.gender) return api.sendMessage("⚠️ Could not determine your gender. Please try again later.", event.threadID, event.messageID);
+      if (!myData || !myData.gender) {
+        return api.sendMessage("⚠️ Impossible de déterminer ton genre. Réessaie plus tard.", event.threadID, event.messageID);
+      }
 
       const myGender = myData.gender.toUpperCase();
       let matchCandidates = [];
 
-      if (myGender === "MALE") matchCandidates = users.filter(user => user.gender === "FEMALE" && user.id !== event.senderID);
-      else if (myGender === "FEMALE") matchCandidates = users.filter(user => user.gender === "MALE" && user.id !== event.senderID);
-      else return api.sendMessage("⚠️ Your gender is undefined. Cannot find a match. Please try again later.", event.threadID, event.messageID);
+      if (myGender === "MALE") {
+        matchCandidates = users.filter(user => user.gender === "FEMALE" && user.id !== event.senderID);
+      } else if (myGender === "FEMALE") {
+        matchCandidates = users.filter(user => user.gender === "MALE" && user.id !== event.senderID);
+      } else {
+        return api.sendMessage("⚠️ Ton genre est indéfini. Impossible de trouver un match.", event.threadID, event.messageID);
+      }
 
-      if (matchCandidates.length === 0) return api.sendMessage("❌ No suitable match found in the group. Please try again later.", event.threadID, event.messageID);
+      if (matchCandidates.length === 0) {
+        return api.sendMessage("❌ Aucun match compatible trouvé dans ce groupe.", event.threadID, event.messageID);
+      }
 
       const selectedMatch = matchCandidates[Math.floor(Math.random() * matchCandidates.length)];
       let matchName = selectedMatch.name;
@@ -69,7 +83,9 @@ module.exports = {
       const avatar2 = `https://graph.facebook.com/${selectedMatch.id}/picture?width=720&height=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
 
       const apiBase = await getApiBase();
-      if (!apiBase) return api.sendMessage("❌ Failed to fetch API base. Please try again later.", event.threadID, event.messageID);
+      if (!apiBase) {
+        return api.sendMessage("❌ Impossible d’accéder à l’API. Réessaie plus tard.", event.threadID, event.messageID);
+      }
 
       const apiUrl = `${apiBase}/api/pair4?avatar1=${encodeURIComponent(avatar1)}&avatar2=${encodeURIComponent(avatar2)}`;
       const outputPath = path.join(__dirname, "pair_output.png");
@@ -79,15 +95,15 @@ module.exports = {
 
       const lovePercent = Math.floor(Math.random() * 31) + 70;
 
-      const message = `💞 𝗠𝗮𝘁𝗰𝗵𝗺𝗮𝗸𝗶𝗻𝗴 𝗖𝗼𝗺𝗽𝗹𝗲𝘁𝗲 💞
+      const message = `💞 𝗠𝗮𝘁𝗰𝗵 𝗮𝗺𝗼𝘂𝗿𝗲𝘂𝘀 𝗳𝗶𝗻𝗮𝗹𝗶𝘀𝗲́ 💞
 
-🎀  ${senderName} ✨️
-🎀  ${matchName} ✨️
+🎀  ${senderName} ✨️  
+🎀  ${matchName} ✨️  
 
-🕊️ 𝓓𝓮𝓼𝓽𝓲𝓷𝔂 𝓱𝓪𝓼 𝔀𝓻𝓲𝓽𝓽𝓮𝓷 𝔂𝓸𝓾𝓻 𝓷𝓪𝓶𝓮𝓼 𝓽𝓸𝓰𝓮𝓽𝓱𝓮𝓻 🌹  
-𝓜𝓪𝔂 𝔂𝓸𝓾𝓻 𝓫𝓸𝓷𝓭 𝓵𝓪𝓼𝓽 𝓯𝓸𝓻𝓮𝓿𝓮𝓻 ✨️  
+🕊️ 𝓛𝓮 𝓭𝓮𝓼𝓽𝓲𝓷 𝓪 𝓾𝓷𝓲 𝓿𝓸𝓼 𝓷𝓸𝓶𝓼 🌹  
+𝓠𝓾𝓮 𝓿𝓸𝓼 𝓵𝓲𝓮𝓷𝓼 𝓭𝓾𝓻𝓮𝓷𝓽 𝓮𝓽𝓮𝓻𝓷𝓮𝓵𝓵𝓮𝓶𝓮𝓷𝓽 ✨️  
 
-💘 𝙲𝚘𝚖𝚙𝚊𝚝𝚒𝚋𝚒𝚕𝚒𝚝𝚢: ${lovePercent}% 💘`;
+💘 𝙽𝚒𝚟𝚎𝚊𝚞 𝚍𝚎 𝚌𝚘𝚖𝚙𝚊𝚝𝚒𝚋𝚒𝚕𝚒𝚝𝚎́ : ${lovePercent}% 💘`;
 
       api.sendMessage(
         { body: message, attachment: fs.createReadStream(outputPath) },
@@ -97,7 +113,7 @@ module.exports = {
       );
 
     } catch (error) {
-      api.sendMessage("❌ An error occurred while trying to find a match. Please try again later.", event.threadID, event.messageID);
+      api.sendMessage("❌ Une erreur s’est produite lors de la recherche d’un match. Réessaie plus tard.", event.threadID, event.messageID);
     }
   }
 };
